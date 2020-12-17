@@ -37,9 +37,9 @@ class CustomerController extends Controller
      */
     public function store(Request $request)
     {
-        Customer::create($request->all());
+        Customer::create(json_decode($request->all()["item"],true));
 
-        return json_encode($request->all());
+        return json_encode($request->all()["item"]);
     }
 
     /**
@@ -50,7 +50,7 @@ class CustomerController extends Controller
      */
     public function show(Customer $customer)
     {
-        return json_encode($customer);
+        return json_encode($customer);  
     }
 
     /**
@@ -73,7 +73,7 @@ class CustomerController extends Controller
      */
     public function update(Request $request, Customer $customer)
     {
-        $customer->update($request->all());
+        $customer->update(json_decode($request->all()["item"],true));
         return json_encode($request->all());
     }
 
@@ -87,5 +87,32 @@ class CustomerController extends Controller
     {
         $customer->delete();
         return json_encode("Customer Deleted");
+    }
+
+
+    public function search(Request $request)
+    {
+        $cpf_regex = "([0-9]{3}[\.]?[0-9]{3}[\.]?[0-9]{3}[-]?[0-9]{2})";
+
+        $ref = $request->all();
+        $valueToSearch = array_shift($ref);
+
+        if (preg_match("([0-9]{11})", $valueToSearch)) {
+            $valueToSearch = substr($valueToSearch, 0, 3) . '.' .
+                                substr($valueToSearch, 3, 3) . '.' .
+                                substr($valueToSearch, 6, 3) . '-' .
+                                substr($valueToSearch, 9, 2);
+        }
+
+              
+        //Check if it has CPF format
+        if (preg_match($cpf_regex, $valueToSearch) || preg_match("([0-9]{11})", $valueToSearch)) {
+            $customers = Customer::where('cpf', $valueToSearch)->get();
+        }
+        else {
+            $customers = Customer::where('name', 'like', "%$valueToSearch%")->get();
+        }
+
+        return json_encode($customers);
     }
 }
