@@ -7,7 +7,7 @@
                 <h4 class="modal-title">Cadastrar Novo Cliente</h4>
             </div>
             <div class="modal-body">
-                <addCustomerForm>
+                <addCustomerForm :edititem="edititem">
                 </addCustomerForm>
             </div>
         </div>
@@ -22,7 +22,7 @@ export default {
     model: {
         prop: 'props'
     },
-    //props: ['edititem'],
+    props: ['edititem'],
     components: {
         addCustomerForm
     },

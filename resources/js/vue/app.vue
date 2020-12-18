@@ -5,7 +5,7 @@
         <input type="text" v-model="txtsearch" name="txtsearch" id="txtsearch">
         <button @click="searchCustomer()">
              <font-awesome-icon icon="search" />
-        </button>   
+        </button>
         <button @click="addNewCustomer()">
             Adicionar novo cliente
         </button>
@@ -15,11 +15,11 @@
         <list-view 
             :items="items"
             v-on:reloadList="getList()"
-            />
+            @modaledit="loadItems" />
 
         <!-- Modal dialog that contains the form inside -->
         <div id="myModal" class="modal fade" role="dialog">
-            <modal></modal>
+            <modal :edititem="edititem"></modal>
         </div>
     </div>
 </template>
@@ -70,6 +70,8 @@ export default {
         },
         //load the modal with form inside to add a new customer
         addNewCustomer() {
+            this.edititem = []
+
             $('#myModal').modal('show')
         }
     },

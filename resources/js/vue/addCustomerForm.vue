@@ -12,7 +12,7 @@
 
 <script>
 export default {
-    //props: ['item', 'edititem'],
+    props: ['edititem'],
     data: function () {
         return {
             item: {
@@ -20,6 +20,15 @@ export default {
             }
         }
     },
+    watch: { 
+      	edititem: function(newVal, oldVal) { // watch it
+          this.item.id = newVal.id
+          this.item.name = newVal.name
+          this.item.cpf = newVal.cpf
+          this.item.birthdate = newVal.birthdate
+          this.item.phone = newVal.phone
+        }
+      },
     methods: {
         //Add or update the customer
         addItem() {
@@ -57,6 +66,7 @@ export default {
             }
             
         }
-    }
+    },
+
 }
 </script>

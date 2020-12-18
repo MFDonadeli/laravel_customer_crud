@@ -12025,13 +12025,23 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 /* harmony default export */ __webpack_exports__["default"] = ({
-  //props: ['item', 'edititem'],
+  props: ['edititem'],
   data: function data() {
     return {
       item: {
         name: ''
       }
     };
+  },
+  watch: {
+    edititem: function edititem(newVal, oldVal) {
+      // watch it
+      this.item.id = newVal.id;
+      this.item.name = newVal.name;
+      this.item.cpf = newVal.cpf;
+      this.item.birthdate = newVal.birthdate;
+      this.item.phone = newVal.phone;
+    }
   },
   methods: {
     //Add or update the customer
@@ -12152,6 +12162,7 @@ __webpack_require__.r(__webpack_exports__);
     },
     //load the modal with form inside to add a new customer
     addNewCustomer: function addNewCustomer() {
+      this.edititem = [];
       $('#myModal').modal('show');
     }
   },
@@ -12296,7 +12307,7 @@ __webpack_require__.r(__webpack_exports__);
   model: {
     prop: 'props'
   },
-  //props: ['edititem'],
+  props: ['edititem'],
   components: {
     addCustomerForm: _addCustomerForm__WEBPACK_IMPORTED_MODULE_0__["default"]
   },
@@ -48100,14 +48111,15 @@ var render = function() {
         on: {
           reloadList: function($event) {
             return _vm.getList()
-          }
+          },
+          modaledit: _vm.loadItems
         }
       }),
       _vm._v(" "),
       _c(
         "div",
         { staticClass: "modal fade", attrs: { id: "myModal", role: "dialog" } },
-        [_c("modal")],
+        [_c("modal", { attrs: { edititem: _vm.edititem } })],
         1
       )
     ],
@@ -48285,7 +48297,12 @@ var render = function() {
         ])
       ]),
       _vm._v(" "),
-      _c("div", { staticClass: "modal-body" }, [_c("addCustomerForm")], 1)
+      _c(
+        "div",
+        { staticClass: "modal-body" },
+        [_c("addCustomerForm", { attrs: { edititem: _vm.edititem } })],
+        1
+      )
     ])
   ])
 }
