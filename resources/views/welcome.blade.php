@@ -9,6 +9,7 @@
         <link rel="stylesheet" href="{{mix('css/app.css')}}">
     </head>
     <body class="antialiased">
+        <!-- Here Vue page will be working -->
         <div id="app">
             <app>
             </app>

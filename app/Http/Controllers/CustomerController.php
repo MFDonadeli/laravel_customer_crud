@@ -20,16 +20,6 @@ class CustomerController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -51,17 +41,6 @@ class CustomerController extends Controller
     public function show(Customer $customer)
     {
         return json_encode($customer);  
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Customer  $customer
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Customer $customer)
-    {
-        return "PUT";
     }
 
     /**
@@ -89,14 +68,20 @@ class CustomerController extends Controller
         return json_encode("Customer Deleted");
     }
 
-
+    /**
+     * Display a listing of the resource.
+     *
+     *  @param  \Illuminate\Http\Request  $request
+     */
     public function search(Request $request)
     {
         $cpf_regex = "([0-9]{3}[\.]?[0-9]{3}[\.]?[0-9]{3}[-]?[0-9]{2})";
 
+        //retrieve the search value to be find, from the request
         $ref = $request->all();
         $valueToSearch = array_shift($ref);
 
+        //If the value is composed by 11 numbers, format it as a CPF
         if (preg_match("([0-9]{11})", $valueToSearch)) {
             $valueToSearch = substr($valueToSearch, 0, 3) . '.' .
                                 substr($valueToSearch, 3, 3) . '.' .
@@ -104,9 +89,8 @@ class CustomerController extends Controller
                                 substr($valueToSearch, 9, 2);
         }
 
-              
-        //Check if it has CPF format
-        if (preg_match($cpf_regex, $valueToSearch) || preg_match("([0-9]{11})", $valueToSearch)) {
+        //Check if it has CPF format and if is not search by name
+        if (preg_match($cpf_regex, $valueToSearch)) {
             $customers = Customer::where('cpf', $valueToSearch)->get();
         }
         else {

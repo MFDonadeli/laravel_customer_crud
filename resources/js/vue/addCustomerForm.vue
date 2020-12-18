@@ -12,37 +12,50 @@
 
 <script>
 export default {
+    //props: ['item', 'edititem'],
     data: function () {
         return {
             item: {
-                name: ""
+                name: ''
             }
         }
     },
     methods: {
+        //Add or update the customer
         addItem() {
             if( this.item.name == '' ) {
                 return;
             }
-
+            
             const json_item = JSON.stringify(this.item);
             console.log(json_item);
 
-            axios.post('customers', {
-                item: json_item
-            })
-            .then( response => {
-                if( response.status == 200 ) {
-                    this.item.name = "";
-                    this.item.cpf = "";
-                    this.item.phone = "";
-                    this.item.birthdate = "";
-                    this.$emit('reloadList');
-                }
-            })
-            .catch( error => {
-                console.log(error);
-            })
+            //if it has customer id, so it means that is update, so we send put to endpoint /customer
+            if(this.item.id) {
+                axios.put('customers/'+this.item.id, {
+                    item: json_item
+                })
+                .catch( error => {
+                    console.log(error);
+                })
+            }
+            else {
+                axios.post('customers', {
+                    item: json_item
+                })
+                .then( response => {
+                    if( response.status == 200 ) {
+                        this.item.name = "";
+                        this.item.cpf = "";
+                        this.item.phone = "";
+                        this.item.birthdate = "";
+                    }
+                })
+                .catch( error => {
+                    console.log(error);
+                })
+            }
+            
         }
     }
 }

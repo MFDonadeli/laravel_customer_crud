@@ -4,7 +4,7 @@
         <td> {{item.cpf}} </td>
         <td> {{item.birthdate}} </td>
         <td> {{item.phone}} </td>
-        <button data-toggle="modal" data-target="#myModal" @click="editItem(item.id)">
+        <button @click="clickEdit">
             <font-awesome-icon icon="edit" />
         </button>
         <button @click="removeItem()" class="trashcan">
@@ -22,15 +22,8 @@ export default {
         modal
     },
     methods: {
-        editItem(id) {
-            axios.get('customers/' + this.item.id)
-            .then( response => {
-                console.log(response)
-            })
-            .catch( error => {
-                console.log(error);
-            })
-            console.log('edit' + id);
+        clickEdit() {
+            this.$emit('editthisitem')
         },
         removeItem() {
             axios.delete('customers/' + this.item.id)

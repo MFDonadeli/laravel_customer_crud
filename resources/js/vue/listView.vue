@@ -15,6 +15,7 @@
                     :item="item"
                     class="item"
                     v-on:itemchanged="$emit('reloadList')"
+                    v-on:editthisitem="setDataEdit(item)"
                 />  
             </tbody>
         </table>
@@ -28,6 +29,12 @@ export default {
     props: ['items'],
     components: {
         listItem
+    },
+    methods: {
+        setDataEdit(item) {
+            console.log(item);
+            this.$emit('modaledit', item)
+        }
     }
 }
 </script>

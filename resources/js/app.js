@@ -15,7 +15,6 @@ import { faPlusSquare, faTrash, faEdit, faSearch } from '@fortawesome/free-solid
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 library.add(faPlusSquare, faTrash, faEdit, faSearch)
-
 Vue.component('font-awesome-icon', FontAwesomeIcon)
 
 const app = new Vue({

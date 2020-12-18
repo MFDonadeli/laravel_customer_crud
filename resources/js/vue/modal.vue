@@ -3,11 +3,10 @@
         <!-- Modal content-->
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" @click="$emit('reloadList')">&times;</button>
+                <button type="button" class="close" data-dismiss="modal" @click="reloadList()">&times;</button>
                 <h4 class="modal-title">Cadastrar Novo Cliente</h4>
             </div>
             <div class="modal-body">
-                Item: {{item}}
                 <addCustomerForm>
                 </addCustomerForm>
             </div>
@@ -21,12 +20,16 @@ import addCustomerForm from './addCustomerForm'
 
 export default {
     model: {
-        prop: 'props',
-        event: 'modalopen'
+        prop: 'props'
     },
-    props: ['item'],
+    //props: ['edititem'],
     components: {
         addCustomerForm
-    } 
+    },
+    methods: {
+        reloadList() {
+            this.$emit('reloadList')
+        }
+    }
 }
 </script>

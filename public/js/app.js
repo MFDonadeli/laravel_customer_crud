@@ -12025,14 +12025,16 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 /* harmony default export */ __webpack_exports__["default"] = ({
+  //props: ['item', 'edititem'],
   data: function data() {
     return {
       item: {
-        name: ""
+        name: ''
       }
     };
   },
   methods: {
+    //Add or update the customer
     addItem: function addItem() {
       var _this = this;
 
@@ -12040,17 +12042,29 @@ __webpack_require__.r(__webpack_exports__);
         return;
       }
 
-      axios.post('/customer', {
-        item: this.item
-      }).then(function (response) {
-        if (response.status == 201) {
-          _this.item.name = "";
+      var json_item = JSON.stringify(this.item);
+      console.log(json_item); //if it has customer id, so it means that is update, so we send put to endpoint /customer
 
-          _this.$emit('reloadList');
-        }
-      })["catch"](function (error) {
-        console.log(error);
-      });
+      if (this.item.id) {
+        axios.put('customers/' + this.item.id, {
+          item: json_item
+        })["catch"](function (error) {
+          console.log(error);
+        });
+      } else {
+        axios.post('customers', {
+          item: json_item
+        }).then(function (response) {
+          if (response.status == 200) {
+            _this.item.name = "";
+            _this.item.cpf = "";
+            _this.item.phone = "";
+            _this.item.birthdate = "";
+          }
+        })["catch"](function (error) {
+          console.log(error);
+        });
+      }
     }
   }
 });
@@ -12088,6 +12102,12 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -12097,10 +12117,13 @@ __webpack_require__.r(__webpack_exports__);
   },
   data: function data() {
     return {
-      items: []
+      items: [],
+      edititem: [],
+      txtsearch: ''
     };
   },
   methods: {
+    //get List of customers from /customers endpoint
     getList: function getList() {
       var _this = this;
 
@@ -12109,8 +12132,30 @@ __webpack_require__.r(__webpack_exports__);
       })["catch"](function (error) {
         console.log(error);
       });
+    },
+    //start search of customer by name or cpf from /search endpoint
+    searchCustomer: function searchCustomer() {
+      var _this2 = this;
+
+      axios.post('search', {
+        name: this.txtsearch
+      }).then(function (response) {
+        _this2.items = response.data;
+      })["catch"](function (error) {
+        console.log(error);
+      });
+    },
+    //this function has the intention to fill the form when edit button is clicked
+    loadItems: function loadItems(i) {
+      this.edititem = i;
+      $('#myModal').modal('show');
+    },
+    //load the modal with form inside to add a new customer
+    addNewCustomer: function addNewCustomer() {
+      $('#myModal').modal('show');
     }
   },
+  //after creation get list of customers
   created: function created() {
     this.getList();
   }
@@ -12150,9 +12195,8 @@ __webpack_require__.r(__webpack_exports__);
     modal: _modal__WEBPACK_IMPORTED_MODULE_0__["default"]
   },
   methods: {
-    editItem: function editItem(id) {
-      this.$emit('modalopen');
-      console.log('edit' + id);
+    clickEdit: function clickEdit() {
+      this.$emit('editthisitem');
     },
     removeItem: function removeItem() {
       var _this = this;
@@ -12203,11 +12247,18 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ['items'],
   components: {
     listItem: _listItem__WEBPACK_IMPORTED_MODULE_0__["default"]
+  },
+  methods: {
+    setDataEdit: function setDataEdit(item) {
+      console.log(item);
+      this.$emit('modaledit', item);
+    }
   }
 });
 
@@ -12240,16 +12291,19 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   model: {
-    prop: 'props',
-    event: 'modalopen'
+    prop: 'props'
   },
-  props: ['item'],
+  //props: ['edititem'],
   components: {
     addCustomerForm: _addCustomerForm__WEBPACK_IMPORTED_MODULE_0__["default"]
+  },
+  methods: {
+    reloadList: function reloadList() {
+      this.$emit('reloadList');
+    }
   }
 });
 
@@ -47995,7 +48049,26 @@ var render = function() {
     [
       _c("h2", [_vm._v("Lista de Clientes!")]),
       _vm._v(" "),
-      _c("input", { attrs: { type: "text", name: "", id: "" } }),
+      _c("input", {
+        directives: [
+          {
+            name: "model",
+            rawName: "v-model",
+            value: _vm.txtsearch,
+            expression: "txtsearch"
+          }
+        ],
+        attrs: { type: "text", name: "txtsearch", id: "txtsearch" },
+        domProps: { value: _vm.txtsearch },
+        on: {
+          input: function($event) {
+            if ($event.target.composing) {
+              return
+            }
+            _vm.txtsearch = $event.target.value
+          }
+        }
+      }),
       _vm._v(" "),
       _c(
         "button",
@@ -48012,7 +48085,13 @@ var render = function() {
       _vm._v(" "),
       _c(
         "button",
-        { attrs: { "data-toggle": "modal", "data-target": "#myModal" } },
+        {
+          on: {
+            click: function($event) {
+              return _vm.addNewCustomer()
+            }
+          }
+        },
         [_vm._v("\n        Adicionar novo cliente\n    ")]
       ),
       _vm._v(" "),
@@ -48068,13 +48147,7 @@ var render = function() {
     _vm._v(" "),
     _c(
       "button",
-      {
-        on: {
-          click: function($event) {
-            return _vm.editItem(_vm.item.id)
-          }
-        }
-      },
+      { on: { click: _vm.clickEdit } },
       [_c("font-awesome-icon", { attrs: { icon: "edit" } })],
       1
     ),
@@ -48134,6 +48207,9 @@ var render = function() {
                 on: {
                   itemchanged: function($event) {
                     return _vm.$emit("reloadList")
+                  },
+                  editthisitem: function($event) {
+                    return _vm.setDataEdit(item)
                   }
                 }
               })
@@ -48189,41 +48265,31 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _c("div", { staticClass: "modal-dialog" }, [
     _c("div", { staticClass: "modal-content" }, [
-      _vm._m(0),
+      _c("div", { staticClass: "modal-header" }, [
+        _c(
+          "button",
+          {
+            staticClass: "close",
+            attrs: { type: "button", "data-dismiss": "modal" },
+            on: {
+              click: function($event) {
+                return _vm.reloadList()
+              }
+            }
+          },
+          [_vm._v("×")]
+        ),
+        _vm._v(" "),
+        _c("h4", { staticClass: "modal-title" }, [
+          _vm._v("Cadastrar Novo Cliente")
+        ])
+      ]),
       _vm._v(" "),
-      _c(
-        "div",
-        { staticClass: "modal-body" },
-        [
-          _vm._v("\n            Item: " + _vm._s(_vm.item) + "\n            "),
-          _c("addCustomerForm")
-        ],
-        1
-      )
+      _c("div", { staticClass: "modal-body" }, [_c("addCustomerForm")], 1)
     ])
   ])
 }
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "modal-header" }, [
-      _c(
-        "button",
-        {
-          staticClass: "close",
-          attrs: { type: "button", "data-dismiss": "modal" }
-        },
-        [_vm._v("×")]
-      ),
-      _vm._v(" "),
-      _c("h4", { staticClass: "modal-title" }, [
-        _vm._v("Cadastrar Novo Cliente")
-      ])
-    ])
-  }
-]
+var staticRenderFns = []
 render._withStripped = true
 
 
